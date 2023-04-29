@@ -27,6 +27,7 @@ public class JavaCommentExtractor {
     static int MIN_LINES = 1;//
 
     public static String extractRawComment(String comment){
+        //extract target from javadoc
         String rawComment= comment.replaceAll("[^\\w\\s\\n@{}]+","");
         rawComment = rawComment.replaceAll("\\{[^\\}]*\\}", "");
         String res="";
@@ -127,8 +128,8 @@ public class JavaCommentExtractor {
 //            while ((line = br.readLine()) != null)
 //                lines += line;
 //        }
-        String basePath="/media/lqhung2001/Coding/LQH/KSTN/LAB_RISE/code_summary/crawl_1010/OneDrive_1_4-22-2023/";
-        String baseoutPath="/media/lqhung2001/Coding/LQH/KSTN/LAB_RISE/code_summary/crawl_1010/OneDrive_1_4-22-2023/";
+        String basePath="/home/lqhung2001/Downloads/RISE/code summary/crawled/";
+        String baseoutPath="/home/lqhung2001/Downloads/RISE/code summary/crawled/";
         ArrayList<String> dirPaths=new ArrayList<String>();
 //        dirPaths.add("alibaba/fastjson2");
 //        dirPaths.add("apitable/apitable");
@@ -156,13 +157,40 @@ public class JavaCommentExtractor {
 //        dirPaths.add("twitter/the-algorithm");
 //        dirPaths.add("VueTubeApp/VueTube");
 //        dirPaths.add("ydb-platform/ydb");
-//
+        ArrayList<String> outextPaths=new ArrayList<String>();
+//        outextPaths.add("alibaba/fastjson2");
+//        outextPaths.add("apitable");
+//        outextPaths.add("burpgpt");
+//        outextPaths.add("pocket-casts-android");
+//        outextPaths.add("TVBoxOSC");
+//        outextPaths.add("cozo");
+//        outextPaths.add("dynamic-tp");
+        outextPaths.add("hertzbeat");
+//        outextPaths.add("Ehviewer");
+//        outextPaths.add("cursor");
+//        outextPaths.add("comprehensive-rust");
+//        outextPaths.add("osv-scanner");
+//        outextPaths.add("Grasscutter");
+//        outextPaths.add("scan4all");
+//        outextPaths.add("hello-algo");
+//        outextPaths.add("maestro");
+//        outextPaths.add("openblocks");
+//        outextPaths.add("PrismLauncher");
+//        outextPaths.add("prql");
+//        outextPaths.add("cloudstream");
+//        outextPaths.add("reloadium");
+//        outextPaths.add("risingwave");
+//        outextPaths.add("CodeGeeX");
+//        outextPaths.add("the-algorithm");
+//        outextPaths.add("VueTube");
+//        outextPaths.add("ydb");
 
         //String directoryPath = "/media/lqhung2001/New Volume/LQH/KSTN/LAB RISE/code summary/crawl_1010/OneDrive_1_4-22-2023/dromara/hertzbeat"; //change the directory path
 //        directoryPath = "C:\\Users\\HUNG\\Documents\\hust\\rise\\java-parser\\src\\data\\tmp";
 
-        for (String dirPath:dirPaths){
-            String directoryPath= basePath+dirPath;
+        for (int i=0;i<dirPaths.size();i++){
+            String directoryPath= basePath+dirPaths.get(i);
+
             File directory = new File(directoryPath);
             File[] files = directory.listFiles();
             for (File file : files) {
@@ -183,7 +211,7 @@ public class JavaCommentExtractor {
                 }
             }
             JsonArray finalOutput = outputJson.build();
-            String outputPath = baseoutPath+dirPath + ".json";
+            String outputPath = baseoutPath+outextPaths.get(i) + ".json";
             try (FileWriter fileWriter = new FileWriter(outputPath)) {
                 // Create a JsonWriter object to write JSON-formatted data to the file
                 JsonWriter jsonWriter = Json.createWriter(fileWriter);
