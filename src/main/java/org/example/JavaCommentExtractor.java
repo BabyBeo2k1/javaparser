@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 public class JavaCommentExtractor {
 
     static JsonArrayBuilder outputJson = Json.createArrayBuilder();
-    static int MIN_LINES = 0;//
+    static int MIN_LINES = 1;//
 
     public static String extractRawComment(String comment){
         String rawComment= comment.replaceAll("[^\\w\\s\\n@{}]+","");
@@ -78,12 +78,14 @@ public class JavaCommentExtractor {
             if (body.isPresent()){
                 BlockStmt bodyObject = (BlockStmt) body.get();
                 rawBody = bodyObject.removeComment().toString();
+
             }
             if (comment.isPresent() && comment.get() instanceof JavadocComment){
                 String title = String.format("name = %s", n.getName());
                 String rawMethod = n.removeComment().toString();
                 JavadocComment javadocComment = (JavadocComment) comment.get();
                 String formattedComment = extractRawComment(javadocComment.toString());
+                System.out.println(rawMethod);
                 if (rawMethod.lines().count() > MIN_LINES && !formattedComment.isEmpty()) {
 //                    System.out.println(title);
 //                    System.out.println(removeCommentRegex(rawMethod));
@@ -126,35 +128,35 @@ public class JavaCommentExtractor {
 //                lines += line;
 //        }
         String basePath="/media/lqhung2001/Coding/LQH/KSTN/LAB_RISE/code_summary/crawl_1010/OneDrive_1_4-22-2023/";
-        String baseoutPath="/media/lqhung2001/Coding/LQH/KSTN/LAB_RISE/code_summary/crawl_1010/";
+        String baseoutPath="/media/lqhung2001/Coding/LQH/KSTN/LAB_RISE/code_summary/crawl_1010/OneDrive_1_4-22-2023/";
         ArrayList<String> dirPaths=new ArrayList<String>();
-        dirPaths.add("alibaba/fastjson2");
-        dirPaths.add("apitable/apitable");
-        dirPaths.add("aress31/burpgpt");
-        dirPaths.add("Automattic/pocket-casts-android");
-        dirPaths.add("CatVodTVOfficial/TVBoxOSC");
-        dirPaths.add("cozodb/cozo");
-        dirPaths.add("dromara/dynamic-tp");
+//        dirPaths.add("alibaba/fastjson2");
+//        dirPaths.add("apitable/apitable");
+//        dirPaths.add("aress31/burpgpt");
+//        dirPaths.add("Automattic/pocket-casts-android");
+//        dirPaths.add("CatVodTVOfficial/TVBoxOSC");
+//        dirPaths.add("cozodb/cozo");
+//        dirPaths.add("dromara/dynamic-tp");
         dirPaths.add("dromara/hertzbeat");
-        dirPaths.add("Ehviewer-Overhauled/Ehviewer");
-        dirPaths.add("getcursor/cursor");
-        dirPaths.add("google/comprehensive-rust");
-        dirPaths.add("google/osv-scanner");
-        dirPaths.add("Grasscutters/Grasscutter");
-        dirPaths.add("hktalent/scan4all");
-        dirPaths.add("krahets/hello-algo");
-        dirPaths.add("mobile-dev-inc/maestro");
-        dirPaths.add("openblocks-dev/openblocks");
-        dirPaths.add("PrismLauncher/PrismLauncher");
-        dirPaths.add("PRQL/prql");
-        dirPaths.add("recloudstream/cloudstream");
-        dirPaths.add("reloadware/reloadium");
-        dirPaths.add("risingwavelabs/risingwave");
-        dirPaths.add("THUDM/CodeGeeX");
-        dirPaths.add("twitter/the-algorithm");
-        dirPaths.add("VueTubeApp/VueTube");
-        dirPaths.add("ydb-platform/ydb");
-
+//        dirPaths.add("Ehviewer-Overhauled/Ehviewer");
+//        dirPaths.add("getcursor/cursor");
+//        dirPaths.add("google/comprehensive-rust");
+//        dirPaths.add("google/osv-scanner");
+//        dirPaths.add("Grasscutters/Grasscutter");
+//        dirPaths.add("hktalent/scan4all");
+//        dirPaths.add("krahets/hello-algo");
+//        dirPaths.add("mobile-dev-inc/maestro");
+//        dirPaths.add("openblocks-dev/openblocks");
+//        dirPaths.add("PrismLauncher/PrismLauncher");
+//        dirPaths.add("PRQL/prql");
+//        dirPaths.add("recloudstream/cloudstream");
+//        dirPaths.add("reloadware/reloadium");
+//        dirPaths.add("risingwavelabs/risingwave");
+//        dirPaths.add("THUDM/CodeGeeX");
+//        dirPaths.add("twitter/the-algorithm");
+//        dirPaths.add("VueTubeApp/VueTube");
+//        dirPaths.add("ydb-platform/ydb");
+//
 
         //String directoryPath = "/media/lqhung2001/New Volume/LQH/KSTN/LAB RISE/code summary/crawl_1010/OneDrive_1_4-22-2023/dromara/hertzbeat"; //change the directory path
 //        directoryPath = "C:\\Users\\HUNG\\Documents\\hust\\rise\\java-parser\\src\\data\\tmp";
