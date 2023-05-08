@@ -11,6 +11,7 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.opencsv.CSVWriter;
 
 
 import javax.json.*;
@@ -31,8 +32,6 @@ public class JavaCommentExtractor {
         String rawComment= comment.replaceAll("[^\\w\\s\\n@{}]+","");
         rawComment = rawComment.replaceAll("\\{[^\\}]*\\}", "");
         String res="";
-
-        Pattern pattern = Pattern.compile("[^\\x00-\\x7F]");
         for (String line : rawComment.lines().toArray(String[]::new)) {
             line = line.strip();
             if (line.startsWith("@")){ // keep @return parameter, and delete other parameters
@@ -40,15 +39,22 @@ public class JavaCommentExtractor {
                     line = line.replaceAll("@return", ". Return");
                     res +=line;
                     continue;
-                } else {
+                } else if (line.startsWith("@param")){
+                    line = line.replaceAll("@param", ". Given");
+                    res +=line;
+                    continue;
+                }else {
                     continue;
                 }
             }
 
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.find()) {
-                res += " " + line;
-            }
+
+            res += " " + line;
+//            for (char c : line.toCharArray()) {
+//                if (c < 127) {
+//                    res+= " HUNGLOI"; // Non-English character found
+//                }
+//            }
         }
         return res.strip();
     }
@@ -89,9 +95,11 @@ public class JavaCommentExtractor {
             String rawBody="";
             if (body.isPresent()){
                 BlockStmt bodyObject = (BlockStmt) body.get();
-                rawBody = bodyObject.removeComment().toString();
-
+                rawBody = bodyObject.removeComment().toString().strip();
+                //rawbody check num lines
             }
+            // print excluded output
+
             if (comment.isPresent() && comment.get() instanceof JavadocComment){
                 String title = String.format("name = %s", n.getName());
                 String rawMethod = n.removeComment().toString();
@@ -139,62 +147,63 @@ public class JavaCommentExtractor {
 //            while ((line = br.readLine()) != null)
 //                lines += line;
 //        }
-        String basePath="/home/lqhung2001/Downloads/RISE/code_summary/crawled/";
-        String baseoutPath="/home/lqhung2001/Downloads/RISE/code_summary/crawled/";
+        String basePath="/media/lqhung2001/Coding/LQH/KSTN/LAB_RISE/code_summary/crawl_1010/OneDrive_1_4-22-2023/";
+        String baseoutPath="/media/lqhung2001/Coding/LQH/KSTN/LAB_RISE/code_summary/crawl_1010/OneDrive_1_4-22-2023/";
         ArrayList<String> dirPaths=new ArrayList<String>();
-        dirPaths.add("alibaba/fastjson2");
-        dirPaths.add("apitable/apitable");
-        dirPaths.add("aress31/burpgpt");
-        dirPaths.add("Automattic/pocket-casts-android");
-        dirPaths.add("CatVodTVOfficial/TVBoxOSC");
-        dirPaths.add("cozodb/cozo");
-        dirPaths.add("dromara/dynamic-tp");
 //        dirPaths.add("dromara/hertzbeat");
-        dirPaths.add("Ehviewer-Overhauled/Ehviewer");
-        dirPaths.add("getcursor/cursor");
-        dirPaths.add("google/comprehensive-rust");
-        dirPaths.add("google/osv-scanner");
-        dirPaths.add("Grasscutters/Grasscutter");
-        dirPaths.add("hktalent/scan4all");
-        dirPaths.add("krahets/hello-algo");
-        dirPaths.add("mobile-dev-inc/maestro");
-        dirPaths.add("openblocks-dev/openblocks");
-        dirPaths.add("PrismLauncher/PrismLauncher");
-        dirPaths.add("PRQL/prql");
-        dirPaths.add("recloudstream/cloudstream");
-        dirPaths.add("reloadware/reloadium");
-        dirPaths.add("risingwavelabs/risingwave");
-        dirPaths.add("THUDM/CodeGeeX");
+//        dirPaths.add("alibaba/fastjson2");
+//        dirPaths.add("apitable/apitable");
+//        dirPaths.add("aress31/burpgpt");
+//        dirPaths.add("Automattic/pocket-casts-android");
+//        dirPaths.add("CatVodTVOfficial/TVBoxOSC");
+//        dirPaths.add("cozodb/cozo");
+//        dirPaths.add("dromara/dynamic-tp");
+//        dirPaths.add("Ehviewer-Overhauled/Ehviewer");
+//        dirPaths.add("getcursor/cursor");
+//        dirPaths.add("google/comprehensive-rust");
+//        dirPaths.add("google/osv-scanner");
+//        dirPaths.add("Grasscutters/Grasscutter");
+//        dirPaths.add("hktalent/scan4all");
+//        dirPaths.add("krahets/hello-algo");
+//        dirPaths.add("mobile-dev-inc/maestro");
+//        dirPaths.add("openblocks-dev/openblocks");
+//        dirPaths.add("PrismLauncher/PrismLauncher");
+//        dirPaths.add("PRQL/prql");
+//        dirPaths.add("recloudstream/cloudstream");
+//        dirPaths.add("reloadware/reloadium");
+//        dirPaths.add("risingwavelabs/risingwave");
+//        dirPaths.add("THUDM/CodeGeeX");
+//        dirPaths.add("VueTubeApp/VueTube");
+//        dirPaths.add("ydb-platform/ydb");
         dirPaths.add("twitter/the-algorithm");
-        dirPaths.add("VueTubeApp/VueTube");
-        dirPaths.add("ydb-platform/ydb");
         ArrayList<String> outextPaths=new ArrayList<String>();
-        outextPaths.add("alibaba/fastjson2");
-        outextPaths.add("apitable");
-        outextPaths.add("burpgpt");
-        outextPaths.add("pocket-casts-android");
-        outextPaths.add("TVBoxOSC");
-        outextPaths.add("cozo");
-        outextPaths.add("dynamic-tp");
+
 //        outextPaths.add("hertzbeat");
-        outextPaths.add("Ehviewer");
-        outextPaths.add("cursor");
-        outextPaths.add("comprehensive-rust");
-        outextPaths.add("osv-scanner");
-        outextPaths.add("Grasscutter");
-        outextPaths.add("scan4all");
-        outextPaths.add("hello-algo");
-        outextPaths.add("maestro");
-        outextPaths.add("openblocks");
-        outextPaths.add("PrismLauncher");
-        outextPaths.add("prql");
-        outextPaths.add("cloudstream");
-        outextPaths.add("reloadium");
-        outextPaths.add("risingwave");
-        outextPaths.add("CodeGeeX");
+//        outextPaths.add("fastjson2");
+//        outextPaths.add("apitable");
+//        outextPaths.add("burpgpt");
+//        outextPaths.add("pocket-casts-android");
+//        outextPaths.add("TVBoxOSC");
+//        outextPaths.add("cozo");
+//        outextPaths.add("dynamic-tp");
+//        outextPaths.add("Ehviewer");
+//        outextPaths.add("cursor");
+//        outextPaths.add("comprehensive-rust");
+//        outextPaths.add("osv-scanner");
+//        outextPaths.add("Grasscutter");
+//        outextPaths.add("scan4all");
+//        outextPaths.add("hello-algo");
+//        outextPaths.add("maestro");
+//        outextPaths.add("openblocks");
+//        outextPaths.add("PrismLauncher");
+//        outextPaths.add("prql");
+//        outextPaths.add("cloudstream");
+//        outextPaths.add("reloadium");
+//        outextPaths.add("risingwave");
+//        outextPaths.add("CodeGeeX");
+//        outextPaths.add("VueTube");
+//        outextPaths.add("ydb");
         outextPaths.add("the-algorithm");
-        outextPaths.add("VueTube");
-        outextPaths.add("ydb");
         String csv_name="out.csv";
         File csv_file= new File(csv_name);
         //String directoryPath = "/media/lqhung2001/New Volume/LQH/KSTN/LAB RISE/code summary/crawl_1010/OneDrive_1_4-22-2023/dromara/hertzbeat"; //change the directory path
@@ -221,8 +230,9 @@ public class JavaCommentExtractor {
             }
 
         }
-        String outputPath=baseoutPath +"out.json";
+        String outputPath=baseoutPath +"tt.json";
         JsonArray finalOutput = outputJson.build();
+        System.out.println(finalOutput.get(0));
         try (FileWriter fileWriter = new FileWriter(outputPath)) {
             // Create a JsonWriter object to write JSON-formatted data to the file
             JsonWriter jsonWriter = Json.createWriter(fileWriter);
@@ -236,6 +246,36 @@ public class JavaCommentExtractor {
 
             System.out.println("Data written to file successfully!");
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String filePath=baseoutPath  +"tt.csv";
+
+        File file = new File(filePath);
+        try {
+            // create FileWriter object with file as parameter
+            FileWriter outputfile = new FileWriter(file);
+
+            // create CSVWriter object filewriter object as parameter
+            CSVWriter writer = new CSVWriter(outputfile);
+
+            // adding header to csv
+            String[] header = { "source","target","repo"};
+            writer.writeNext(header);
+            for (JsonValue data: finalOutput){
+                String[] write_line={((JsonObject) data).getString("source"),((JsonObject) data).getString("target"),((JsonObject) data).getString("repo")};
+                writer.writeNext(write_line);
+            }
+            // add data to csv
+//            String[] data1 = { "Aman", "10", "620" };
+//            writer.writeNext(data1);
+//            String[] data2 = { "Suraj", "10", "630" };
+//            writer.writeNext(data2);
+
+            // closing writer connection
+            writer.close();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
