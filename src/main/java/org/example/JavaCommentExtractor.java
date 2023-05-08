@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 public class JavaCommentExtractor {
 
     static JsonArrayBuilder outputJson = Json.createArrayBuilder();
+    static JsonArrayBuilder rejectedOutputJson= Json.createArrayBuilder();
     static int MIN_LINES = 1;//
 
     public static String extractRawComment(String comment){
@@ -93,28 +94,50 @@ public class JavaCommentExtractor {
             Optional body = n.getBody();
             List<Comment> comments = n.getAllContainedComments();
             String rawBody="";
+
+            ArrayList<String>y= new ArrayList<String>();
             if (body.isPresent()){
                 BlockStmt bodyObject = (BlockStmt) body.get();
                 rawBody = bodyObject.removeComment().toString().strip();
                 //rawbody check num lines
+                String x=rawBody;
+                x= x.replaceAll(" ","");
+                x= x.replaceAll("\\{","");
+                x= x.replaceAll("}","");
+                for (String a:x.strip().split("\n")){
+                    //System.out.println(a);
+                    if (!a.isEmpty()){
+                        y.add(a);
+                    }
+                }
+
             }
             // print excluded output
 
-            if (comment.isPresent() && comment.get() instanceof JavadocComment){
+            if (comment.isPresent() && comment.get() instanceof JavadocComment ){
                 String title = String.format("name = %s", n.getName());
                 String rawMethod = n.removeComment().toString();
                 JavadocComment javadocComment = (JavadocComment) comment.get();
                 String formattedComment = extractRawComment(javadocComment.toString());
                 if (rawMethod.lines().count() > MIN_LINES && !formattedComment.isEmpty()) {
-//                    System.out.println(title);
-//                    System.out.println(removeCommentRegex(rawMethod));
-//                    System.out.println(comment.get());
-                    JsonObject data = Json.createObjectBuilder()
-                            .add("source", removeCommentRegex(rawMethod))
-                            .add("target", formattedComment)
-                            .add("repo",this.repo)
-                            .build();
-                    outputJson.add(data);
+                    if (y.size()>2){
+    //                    System.out.println(title);
+    //                    System.out.println(removeCommentRegex(rawMethod));
+    //                    System.out.println(comment.get());
+                        JsonObject data = Json.createObjectBuilder()
+                                .add("source", removeCommentRegex(rawMethod))
+                                .add("target", formattedComment)
+                                .add("repo",this.repo)
+                                .build();
+                        outputJson.add(data);
+                    }else{
+                        JsonObject data = Json.createObjectBuilder()
+                                .add("source", removeCommentRegex(rawMethod))
+                                .add("target", formattedComment)
+                                .add("repo",this.repo)
+                                .build();
+                        rejectedOutputJson.add(data);
+                    }
                 }
             }
             // check javadoc comment manually by regex
@@ -250,6 +273,10 @@ public class JavaCommentExtractor {
         }
         String filePath=baseoutPath  +"tt.csv";
 
+        String rejectedfilePath=baseoutPath  +"rejectedtt.csv";
+
+        JsonArray rejectedfinalOutput = rejectedOutputJson.build();
+
         File file = new File(filePath);
         try {
             // create FileWriter object with file as parameter
@@ -262,6 +289,35 @@ public class JavaCommentExtractor {
             String[] header = { "source","target","repo"};
             writer.writeNext(header);
             for (JsonValue data: finalOutput){
+                String[] write_line={((JsonObject) data).getString("source"),((JsonObject) data).getString("target"),((JsonObject) data).getString("repo")};
+                writer.writeNext(write_line);
+            }
+            // add data to csv
+//            String[] data1 = { "Aman", "10", "620" };
+//            writer.writeNext(data1);
+//            String[] data2 = { "Suraj", "10", "630" };
+//            writer.writeNext(data2);
+
+            // closing writer connection
+            writer.close();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        File rejectedfile = new File(rejectedfilePath);
+        try {
+            // create FileWriter object with file as parameter
+            FileWriter rejectedoutputfile = new FileWriter(rejectedfile);
+
+            // create CSVWriter object filewriter object as parameter
+            CSVWriter writer = new CSVWriter(rejectedoutputfile);
+
+            // adding header to csv
+            String[] header = { "source","target","repo"};
+            writer.writeNext(header);
+            for (JsonValue data: rejectedfinalOutput){
                 String[] write_line={((JsonObject) data).getString("source"),((JsonObject) data).getString("target"),((JsonObject) data).getString("repo")};
                 writer.writeNext(write_line);
             }
